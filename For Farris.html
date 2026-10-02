@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For Farris</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--wine:#5c0f2e;--wine-d:#45091f;--cream:#f3ead8;--cream-d:#e6d9bd;--pink:#f4c3cf;--ink:#7a1038;--gold:#c9a24a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;min-height:100vh;background-color:var(--wine);color:var(--ink);font-family:"Kalam","Segoe Print","Comic Sans MS",cursive;
+background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,rgba(0,0,0,.08) 0 1px,transparent 1px 3px)}
+.hd{font-family:"Caveat Brush","Kalam",cursive;letter-spacing:.02em}
+.view{display:none;min-height:100vh;padding:28px 18px 48px;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.view.on{display:flex}
+.stars{position:fixed;inset:0;pointer-events:none;color:var(--gold)}
+.stars span{position:absolute;font-size:18px;opacity:.85}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.btn{background:var(--cream);color:var(--wine);border:0;border-radius:999px;padding:12px 26px;font-weight:700;font-size:1.05rem;box-shadow:0 4px 0 var(--wine-d)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--wine-d)}
+
+/* lock */
+#lock{--k:min(68px,19vw,10svh);gap:0}
+#lock h1{font-size:clamp(1.8rem,9vw,2.6rem);color:var(--cream);margin:0 0 4px;line-height:1.05}
+#lock p{color:var(--pink);margin:0 0 16px}
+.dots{display:flex;gap:16px;margin-bottom:6px}
+.dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--gold);transition:background .15s}
+.dot.f{background:var(--gold)}
+#hint{min-height:2.8em;margin:8px 0 10px;color:var(--pink);font-size:1.05rem;max-width:300px}
+.pad{display:grid;grid-template-columns:repeat(3,var(--k));gap:calc(var(--k)*.2)}
+.pad button{width:var(--k);height:var(--k);border-radius:50%;border:0;background:var(--cream);color:var(--wine);font:700 calc(var(--k)*.42) "Kalam",cursive;box-shadow:0 3px 0 var(--wine-d);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.pad button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--wine-d)}
+.pad .ghost{background:transparent;box-shadow:none;color:var(--cream)}
+.shake{animation:sh .4s}
+@keyframes sh{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+
+/* envelope */
+#mail h1{color:var(--cream);font-size:2.2rem;margin:0 0 4px}
+#mail .sub{color:var(--pink);margin:0 0 54px}
+.env{position:relative;width:min(320px,88vw);height:min(210px,58vw);margin-top:120px;cursor:pointer;background:none;border:0;padding:0;color:inherit;text-align:center}
+.env .back{position:absolute;inset:0;background:var(--cream-d);border-radius:4px}
+.env .paper{position:absolute;left:5%;right:5%;bottom:6%;height:92%;z-index:2;background:var(--pink);border-radius:3px;padding:16px 16px 0;font-size:.82rem;line-height:1.5;overflow:hidden;transition:transform .8s ease .35s;box-shadow:0 2px 8px rgba(0,0,0,.25);text-align:left;cursor:default}
+.env.open .paper{transform:translateY(-62%);cursor:pointer}
+.paper .dear{font-weight:700;display:block}
+.paper svg{display:block;margin:0 auto 6px}
+.env .front{position:absolute;inset:0;z-index:3;background:var(--cream);clip-path:polygon(0 0,50% 52%,100% 0,100% 100%,0 100%);border-radius:4px}
+.env .front::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(150,120,70,.12))}
+.env .flap{position:absolute;left:0;right:0;top:0;height:56%;background:var(--cream);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .5s ease,z-index 0s .25s;z-index:4;filter:drop-shadow(0 2px 2px rgba(0,0,0,.2))}
+.env.open .flap{transform:rotateX(180deg);z-index:1;background:var(--cream-d)}
+.env .label{position:absolute;left:0;right:0;top:56%;z-index:5;font-size:1.6rem;line-height:1.1;color:var(--ink);transition:opacity .3s}
+.env .seal{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e0b57a,#b9803f);z-index:6;display:grid;place-items:center;color:#7a4a1a;font-size:1.3rem;box-shadow:0 2px 4px rgba(0,0,0,.3);transition:opacity .3s}
+.env.open .seal,.env.open .label{opacity:0;pointer-events:none}
+.tap{color:var(--pink);margin-top:26px;font-size:1rem}
+
+/* note */
+.note{position:relative;width:min(520px,100%);background:var(--pink);border-radius:4px;padding:34px 28px 30px;text-align:left;box-shadow:0 10px 30px rgba(0,0,0,.35);background-image:repeating-linear-gradient(180deg,transparent 0 31px,rgba(122,16,56,.1) 31px 32px)}
+.note svg{display:block;margin:0 auto 14px}
+.note p{margin:0 0 14px;font-size:1.15rem;line-height:32px}
+.note .dear{font-weight:700}
+.note .sign{text-align:right;margin:10px 0 0}
+#note .btn{margin-top:30px}
+.back-link{background:none;border:0;color:var(--pink);margin-top:20px;text-decoration:underline;font-size:1rem}
+
+/* voucher */
+.vch{position:relative;width:min(440px,100%);background:var(--cream);color:var(--wine);border:3px dashed var(--wine);outline:8px solid var(--cream);border-radius:10px;padding:32px 26px;box-shadow:0 12px 34px rgba(0,0,0,.4);animation:pop .7s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.6) rotate(-4deg);opacity:0}}
+.vch h2{font-size:2.3rem;line-height:1.05;margin:0 0 4px}
+.vch .lead{margin:0 0 18px}
+.vch ul{list-style:none;padding:0;margin:0 0 18px;text-align:left;font-size:1.25rem}
+.vch li{padding:9px 0 9px 36px;border-bottom:1px dotted rgba(92,15,46,.4);position:relative}
+.vch li::before{content:"\2665";position:absolute;left:6px;color:#b3173f}
+.vch .fine{margin:0;font-size:1rem}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="stars" aria-hidden="true">
+<span style="left:6%;top:18%">&#9733;</span><span style="left:12%;top:72%;font-size:13px">&#9733;</span><span style="right:8%;top:14%;font-size:14px">&#9733;</span><span style="right:12%;top:80%">&#9733;</span><span style="left:48%;top:92%;font-size:12px">&#9733;</span>
+</div>
+
+<main>
+<section class="view on" id="lock" aria-label="Password">
+  <h1 class="hd">A little something for you</h1>
+  <p>Enter our anniversary to open it</p>
+  <div class="dots" id="dots" role="img" aria-label="4 digit code"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+  <div id="hint" role="status"></div>
+  <div class="pad"><button data-k="1" aria-label="1">1</button><button data-k="2" aria-label="2">2</button><button data-k="3" aria-label="3">3</button><button data-k="4" aria-label="4">4</button><button data-k="5" aria-label="5">5</button><button data-k="6" aria-label="6">6</button><button data-k="7" aria-label="7">7</button><button data-k="8" aria-label="8">8</button><button data-k="9" aria-label="9">9</button><button class="ghost" disabled aria-hidden="true"></button><button data-k="0" aria-label="0">0</button><button class="ghost" id="del" aria-label="Delete">&#9003;</button></div>
+</section>
+
+<section class="view" id="mail" aria-label="Mail">
+  <h1 class="hd">You've got mail</h1>
+  <p class="sub">Something came in for you, Farris</p>
+  <button class="env" id="env" aria-label="Open the envelope">
+    <div class="back"></div>
+    <div class="paper" id="peek" role="link" tabindex="-1">
+      <svg width="40" height="22" viewBox="0 0 40 22" fill="none" stroke="#7a1038" stroke-width="1.5"><path d="M20 12c-4-8-14-8-14-2s9 6 14 2zm0 0c4-8 14-8 14-2s-9 6-14 2zM20 12l-5 9M20 12l5 9"/></svg>
+      <span class="dear">Dear Farris,</span>
+      You made it through another week &mdash; and the last week of training and crazy LRT crowds (yay)! I know you've been really tired lately&hellip;
+    </div>
+    <div class="front"></div>
+    <div class="flap"></div>
+    <div class="label hd">For Farris</div>
+    <div class="seal">&hearts;</div>
+  </button>
+  <div class="tap" id="tap">Tap the envelope to open it</div>
+</section>
+
+<section class="view" id="note" aria-label="Letter">
+  <article class="note">
+    <svg width="54" height="30" viewBox="0 0 40 22" fill="none" stroke="#7a1038" stroke-width="1.5" aria-hidden="true"><path d="M20 12c-4-8-14-8-14-2s9 6 14 2zm0 0c4-8 14-8 14-2s-9 6-14 2zM20 12l-5 9M20 12l5 9"/></svg>
+    <p class="dear">Dear Farris,</p>
+    <p>You made it through another week &mdash; and the last week of training and crazy LRT crowds (yay)!</p>
+    <p>I know you've been really tired lately, and I wish I could make things a little easier for you. I hope these little things gave you something to look forward to during the week, even if it's just for a moment.</p>
+    <p>I'm really proud of you for staying strong through it all, and I'm so excited for you to start this new chapter at your job. I'll always be here cheering you on, no matter what.</p>
+    <p>You don't always have to be okay or have everything together. When you're tired, you can just come to me and rest. I'll be here.</p>
+    <p>I love you.</p>
+    <p class="sign">Yours,<br>Kelly</p>
+  </article>
+  <button class="btn" id="redeem">Click to redeem special gift</button>
+  <button class="back-link" data-go="mail">Back to the envelope</button>
+</section>
+
+<section class="view" id="gift" aria-label="Voucher">
+  <div class="vch">
+    <h2 class="hd">Boyfriend Reward Card</h2>
+    <p class="lead">This card can be redeemed for:</p>
+    <ul>
+      <li>1 &times; Head Massage</li>
+      <li>1 &times; Back Massage</li>
+      <li>1 &times; Ear Cleaning</li>
+      <li>Unlimited Hugs</li>
+    </ul>
+    <p class="fine">Redeem whenever required.<br>No expiry date.</p>
+  </div>
+  <button class="back-link" data-go="note">Back to the letter</button>
+</section>
+</main>
+
+<script>
+(function(){
+  var PASS="2308", unlocked=false;
+  var views=["lock","mail","note","gift"];
+  function show(n){
+    if(!unlocked) n="lock";
+    views.forEach(function(v){document.getElementById(v).classList.toggle("on",v===n)});
+    window.scrollTo(0,0);
+  }
+  function route(){ show((location.hash||"").slice(1)||"lock"); }
+  function go(n){ if(location.hash==="#"+n) route(); else location.hash=n; }
+  window.addEventListener("hashchange",route);
+
+  var code="", dots=document.querySelectorAll(".dot"), dbox=document.getElementById("dots"), hint=document.getElementById("hint");
+  function render(){ dots.forEach(function(d,i){ d.classList.toggle("f",i<code.length); }); }
+  function check(){
+    if(code===PASS){ unlocked=true; hint.textContent=""; code=""; render(); go("mail"); return; }
+    hint.textContent="Not quite. Hint: The day it all began...";
+    dbox.classList.remove("shake"); void dbox.offsetWidth; dbox.classList.add("shake");
+    code=""; render();
+  }
+  function press(k){ if(code.length>=4) return; code+=k; render(); if(code.length===4) setTimeout(check,150); }
+  document.querySelectorAll("[data-k]").forEach(function(b){ b.addEventListener("click",function(){ press(b.getAttribute("data-k")); }); });
+  document.getElementById("del").addEventListener("click",function(){ code=code.slice(0,-1); render(); });
+  document.addEventListener("keydown",function(e){
+    if(!document.getElementById("lock").classList.contains("on")) return;
+    if(/^[0-9]$/.test(e.key)) press(e.key);
+    else if(e.key==="Backspace"){ code=code.slice(0,-1); render(); }
+  });
+
+  var env=document.getElementById("env"), peek=document.getElementById("peek"), tap=document.getElementById("tap");
+  env.addEventListener("click",function(e){
+    if(!env.classList.contains("open")){
+      env.classList.add("open"); peek.tabIndex=0; tap.textContent="Tap the note to read it";
+      env.setAttribute("aria-label","Read the letter");
+    } else { go("note"); }
+  });
+  peek.addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.stopPropagation(); go("note"); } });
+  document.getElementById("redeem").addEventListener("click",function(){ go("gift"); });
+  document.querySelectorAll("[data-go]").forEach(function(b){ b.addEventListener("click",function(){ go(b.getAttribute("data-go")); }); });
+  route();
+})();
+</script>
+</body>
+</html>
